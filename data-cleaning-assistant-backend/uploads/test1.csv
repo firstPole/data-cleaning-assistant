@@ -1,0 +1,7 @@
+id,name,age,email
+1,John Doe,25,john.doe@example.com
+2,Jane Smith,,
+3,Bob Johnson,35,bob.johnson@example
+4,,28,alice.wonderland@example.com
+5,Tom Lee,45,tom.lee@example.com
+6,Emily Stone,29,emily.stone@examplecom

@@ -1,0 +1,12 @@
+{
+    "dev": {
+        "aws_region": "us-east-1",
+        "app_function": "app.app",  // 'app' is the name of your file and 'app' is the Flask app object
+        "project_name": "my-flask-app",
+        "runtime": "python3.8",
+        "s3_bucket": "my-flask-app-bucket",  // Replace with your S3 bucket
+        "exclude": ["*.tests", "*.test", "*.git"],
+        "timeout_seconds": 30,
+        "memory_size": 512
+    }
+}
