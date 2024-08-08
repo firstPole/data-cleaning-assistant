@@ -1,48 +1,41 @@
 // src/components/NavBar.js
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Navbar, Nav, Container } from 'react-bootstrap';
 import { AuthContext } from '../context/AuthContext';
-import './style/NavBar.css'; // Import custom CSS file for additional styling
+import './style/NavBar.module.css'; // Import custom CSS file for additional styling
 
 function NavBar() {
-    const { user, logout } = useContext(AuthContext);
-    const navigate = useNavigate();
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-    const handleLogout = () => {
-        logout();
-        navigate('/login'); // Redirect to login page after logout
-    };
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
-    return (
-        <Navbar bg="light" expand="lg" className="navbar">
-            <Container>
-                <Navbar.Brand as={Link} to="/">MyApp</Navbar.Brand>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="ml-auto">
-                        <Nav.Link as={Link} to="/">Home</Nav.Link>
-                        {!user ? (
-                            <>
-                                <Nav.Link as={Link} to="/login">Login</Nav.Link>
-                                <Nav.Link as={Link} to="/signup">Sign Up</Nav.Link>
-                            </>
-                        ) : (
-                            <>
-                                <Nav.Link as={Link} to="/upload">Upload</Nav.Link>
-                                <Nav.Link as={Link} to="/reports">Reports</Nav.Link>
-                                <Nav.Link as={Link} to="/verify-email">Verify Email</Nav.Link>
-                                <Nav.Link as={Link} to="/verify-phone">Verify Phone</Nav.Link>
-                                <Nav.Link as={Link} to="/upgrade">Upgrade</Nav.Link>
-                                <Nav.Link as={Link} to="/settings">Settings</Nav.Link>
-                                <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
-                            </>
-                        )}
-                    </Nav>
-                </Navbar.Collapse>
-            </Container>
-        </Navbar>
-    );
+  return (
+    <nav className="navbar">
+      <ul className="navbar-nav">
+        <li className="nav-item"><Link to="/">Home</Link></li>
+        {!user ? (
+          <>
+            <li className="nav-item"><Link to="/login">Login</Link></li>
+            <li className="nav-item"><Link to="/signup">Sign Up</Link></li>
+          </>
+        ) : (
+          <>
+            <li className="nav-item"><Link to="/upload">Upload</Link></li>
+            <li className="nav-item"><Link to="/reports">Reports</Link></li>
+            <li className="nav-item"><Link to="/verify-email">Verify Email</Link></li>
+            <li className="nav-item"><Link to="/verify-phone">Verify Phone</Link></li>
+            <li className="nav-item"><Link to="/upgrade">Upgrade</Link></li>
+            <li className="nav-item"><Link to="/settings">Settings</Link></li>
+            <li className="nav-item"><button onClick={handleLogout} className="logout-btn">Logout</button></li>
+          </>
+        )}
+      </ul>
+    </nav>
+  );
 }
 
 export default NavBar;

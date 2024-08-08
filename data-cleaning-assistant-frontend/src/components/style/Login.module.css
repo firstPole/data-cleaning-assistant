@@ -1,54 +1,37 @@
 /* src/components/Login.css */
 .login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Full viewport height */
+    padding: 2rem;
+    max-width: 600px;
+    margin: auto;
     background-color: #f8f9fa;
-    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .login-form-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: #fff;
+    background-color: #ffffff;
     padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     width: 100%;
-    max-width: 400px; /* Limiting max width for larger screens */
 }
 
 .login-form-container h2 {
-    font-size: 1.5rem; /* Responsive font size */
-    margin-bottom: 1.5rem;
+    font-size: 28px;
+    color: #333;
 }
 
-.login-form-container .form-control {
-    border-radius: 4px;
-    margin-bottom: 1rem;
+.form-input {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
 }
 
-.login-form-container .btn-primary {
-    border-radius: 4px;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
+.login-button {
+    background-color: #007bff;
+    border: none;
+    border-radius: 8px;
 }
 
-@media (max-width: 576px) {
-    .login-form-container {
-        padding: 1rem;
-        max-width: 100%;
-    }
-    
-    .login-form-container h2 {
-        font-size: 1.25rem;
-    }
-    
-    .login-form-container .btn-primary {
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
-    }
+.login-button:hover {
+    background-color: #0056b3;
 }
