@@ -1,39 +1,70 @@
-import React, { useState, useEffect } from 'react';
+// UserSettings.js
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { Container, Form, Button, Alert } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext'; // Update the path as needed
 
 function UserSettings() {
-  const [subscription, setSubscription] = useState('basic');
+  const { user, loading } = useContext(AuthContext);
+  const [userData, setUserData] = useState({});
+  const [subscription, setSubscription] = useState('');
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchSubscription = async () => {
+    if (loading) return; // Prevent fetching if loading
+
+    if (!user) {
+      navigate('/login'); // Redirect to login if user is not authenticated
+      return;
+    }
+
+    const fetchUserData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user/subscription`);
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user`);
+        setUserData(response.data.user);
         setSubscription(response.data.subscription);
       } catch (error) {
-        console.error('Error fetching subscription:', error.response?.data?.error || error.message);
+        setMessage('Error fetching user data: ' + (error.response?.data?.error || error.message));
       }
     };
 
-    fetchSubscription();
-  }, []);
+    fetchUserData();
+  }, [loading, user, navigate]);
 
-  const handleUpgrade = async () => {
+  const handleSubscriptionChange = async (newSubscription) => {
     try {
-      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/upgrade`);
-      setSubscription('premium');
+      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/upgrade`, { subscription: newSubscription });
+      setSubscription(newSubscription);
+      setMessage('Subscription updated successfully.');
     } catch (error) {
-      console.error('Error upgrading subscription:', error.response?.data?.error || error.message);
+      setMessage('Error updating subscription: ' + (error.response?.data?.error || error.message));
     }
   };
 
+  if (loading) return <p>Loading...</p>;
+
   return (
-    <div>
-      <h2>User Settings</h2>
-      <p>Current Subscription: {subscription}</p>
-      {subscription === 'basic' && (
-        <button onClick={handleUpgrade}>Upgrade to Premium</button>
-      )}
-    </div>
+    <Container>
+      <h2 className="my-4">User Settings</h2>
+      <Form>
+        <Form.Group className="mb-3">
+          <Form.Label>Username:</Form.Label>
+          <Form.Control type="text" value={userData.username || ''} readOnly />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Email:</Form.Label>
+          <Form.Control type="email" value={userData.email || ''} readOnly />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Subscription:</Form.Label>
+          <Form.Control type="text" value={subscription || ''} readOnly />
+        </Form.Group>
+        <Button variant="primary" onClick={() => handleSubscriptionChange('premium')}>Upgrade to Premium</Button>
+      </Form>
+      {message && <Alert variant="info" className="mt-3">{message}</Alert>}
+    </Container>
   );
 }
 

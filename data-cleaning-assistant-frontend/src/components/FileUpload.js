@@ -1,24 +1,45 @@
-import React, { useState, useEffect } from 'react';
+// src/components/FileUpload.js
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { Container, Form, Button, Alert } from 'react-bootstrap';
+import { AuthContext } from '../context/AuthContext'; // Import AuthContext
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
 
 function FileUpload() {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState('');
-  const [fileCount, setFileCount] = useState(0); // Track number of uploaded files
-  const [subscription, setSubscription] = useState('basic'); // Track subscription plan
+  const [fileCount, setFileCount] = useState(0);
+  const [subscription, setSubscription] = useState('basic');
+  const { user } = useContext(AuthContext); // Access user from context
+  const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
+    if (!user) {
+      navigate('/login'); // Redirect to login if not authenticated
+      return;
+    }
+
     const fetchFileCount = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user/files-count`);
         setFileCount(response.data.count);
       } catch (error) {
-        console.error('Error fetching file count:', error.response?.data?.error || error.message);
+        setMessage('Error fetching file count: ' + (error.response?.data?.error || error.message));
+      }
+    };
+
+    const fetchSubscription = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user/subscription`);
+        setSubscription(response.data.subscription);
+      } catch (error) {
+        setMessage('Error fetching subscription: ' + (error.response?.data?.error || error.message));
       }
     };
 
     fetchFileCount();
-  }, [subscription]);
+    fetchSubscription();
+  }, [user, navigate]);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -26,41 +47,38 @@ function FileUpload() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (subscription === 'basic' && fileCount >= 5) {
-        setMessage('File upload limit reached. Please upgrade to upload more files.');
-        return;
+      setMessage('File upload limit reached. Please upgrade.');
+      return;
     }
 
     const formData = new FormData();
     formData.append('file', file);
 
     try {
-        const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/upload`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
-        setMessage(response.data.message);
-        if (subscription === 'basic') setFileCount(fileCount + 1);
-    } catch (error) {
-        if (error.response?.status === 429) {
-            setMessage('Rate limit exceeded. Please try again later.');
-        } else {
-            setMessage('Error processing file: ' + (error.response?.data?.error || error.message));
+      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/upload`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
         }
+      });
+      setMessage(response.data.message);
+      if (subscription === 'basic') setFileCount(fileCount + 1);
+    } catch (error) {
+      setMessage('Error processing file: ' + (error.response?.data?.error || error.message));
     }
-};
+  };
 
   return (
-    <div>
-      <h2>Upload CSV</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="file" onChange={handleFileChange} required />
-        <button type="submit">Upload</button>
-      </form>
-      <p>{message}</p>
-    </div>
+    <Container>
+      <h2 className="my-4">Upload File</h2>
+      <Form onSubmit={handleSubmit}>
+        <Form.Group className="mb-3">
+          <Form.Control type="file" onChange={handleFileChange} required />
+        </Form.Group>
+        <Button variant="primary" type="submit">Upload</Button>
+      </Form>
+      {message && <Alert variant="info" className="mt-3">{message}</Alert>}
+    </Container>
   );
 }
 

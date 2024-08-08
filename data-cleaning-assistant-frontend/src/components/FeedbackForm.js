@@ -1,9 +1,22 @@
-import React, { useState } from 'react';
+// FeedbackForm.js
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext'; // Update the path as needed
 
 function FeedbackForm() {
+  const { user, loading } = useContext(AuthContext);
   const [feedback, setFeedback] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (loading) return; // Prevent redirect if loading
+
+    if (!user) {
+      navigate('/login'); // Redirect to login if user is not authenticated
+    }
+  }, [loading, user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,6 +27,8 @@ function FeedbackForm() {
       setMessage('Error submitting feedback: ' + (error.response?.data?.error || error.message));
     }
   };
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div>
